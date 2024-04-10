@@ -1,79 +1,84 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZEUS Wiki</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Additional custom styles can go here */
+    </style>
 </head>
-<body>
-    <div class="main-layout">
-        <header>
-            <h1>ZEUS Wiki</h1>
-            <nav>
-                <ul>
-                    <li><a href="#introduction">Introduction</a></li>
-                    <li><a href="#how-to-use">How to Use</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#reports">Scan Reports</a></li>
-                    <li><a href="#faq">FAQ</a></li>
-                </ul>
-            </nav>
-        </header>
-        <main>
-            <section id="introduction" class="section">
-                <h2>Introduction</h2>
-                <p>Welcome to ZEUS, your web app scanning solution.</p>
-            </section>
-            <section id="how-to-use" class="section">
-                <h2>How to Use ZEUS</h2>
-                <p>To start using ZEUS for scanning your web applications for security vulnerabilities, follow the steps outlined below:</p>
-                <ol>
-                    <li>
-                        <strong>Set Up:</strong> Ensure ZEUS is correctly installed and configured on your system. Refer to the installation guide if needed.
-                    </li>
-                    <li>
-                        <strong>Target URL:</strong> Identify the target URL of the web application you wish to scan.
-                    </li>
-                    <li>
-                        <strong>Start Scan:</strong> Use the command line interface to initiate a scan. An example command might be:
-                        <code>zeus-scan --target http://example.com --project-folder /path/to/save/results</code>
-                    </li>
-                    <li>
-                        <strong>Review Results:</strong> Once the scan is complete, ZEUS generates reports in various formats. Navigate to the project folder to review the findings.
-                    </li>
-                    <li>
-                        <strong>Verification:</strong> Manually verify the reported findings to confirm their validity and severity.
-                    </li>
-                    <li>
-                        <strong>Take Action:</strong> Based on the findings, take the necessary corrective actions to mitigate any vulnerabilities.
-                    </li>
-                </ol>
-                <p>For more detailed information on each step, refer to the corresponding sections in this wiki.</p>
-            </section>
-            <section id="features" class="section">
-                <h2>Features</h2>
-                <!-- Content here -->
-            </section>
-            <section id="reports" class="section">
-                <h2>Scan Reports</h2>
-                <!-- Content here -->
-            </section>
-            <section id="faq" class="section">
-                <h2>FAQ</h2>
-                <div class="faq-item">
-                    <h3>Question 1</h3>
-                    <p class="faq-answer">Answer to question 1.</p>
-                </div>
-                <!-- Additional FAQ items here -->
-            </section>
-        </main>
-        <footer>
-            <p>&copy; 2024 ZEUS. All rights reserved.</p>
-        </footer>
-    </div>
-    <script src="scripts.js"></script>
+<body class="font-sans bg-gray-100 text-gray-900">
+    <nav class="bg-gray-800 text-white p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between">
+            <a href="#introduction" class="hover:text-gray-300">Introduction</a>
+            <a href="#getting-started" class="hover:text-gray-300">Getting Started</a>
+            <a href="#features" class="hover:text-gray-300">Features</a>
+            <a href="#usage" class="hover:text-gray-300">Usage</a>
+            <a href="#faq" class="hover:text-gray-300">FAQ</a>
+            <a href="#contributing" class="hover:text-gray-300">Contributing</a>
+            <a href="#tutorials" class="hover:text-gray-300">Tutorials</a>
+            <a href="#case-studies" class="hover:text-gray-300">Case Studies</a>
+        </div>
+    </nav>
+    <section id="introduction" class="p-8">
+        <div class="container mx-auto">
+            <h1 class="text-4xl font-bold mb-4">Introduction to ZEUS</h1>
+            <p>ZEUS is an advanced web application scanner designed to discover vulnerabilities with precision and efficiency. Built on the principles of OWASP ZAP, ZEUS integrates seamlessly into CI/CD pipelines, offering detailed insights and reports to developers and security teams alike.</p>
+        </div>
+    </section>
+    <section id="getting-started" class="p-8 bg-gray-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-4">Getting Started with ZEUS</h2>
+            <!-- Content -->
+        </div>
+    </section>
+    <section id="features" class="p-8">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-4">ZEUS Features</h2>
+            <!-- Content -->
+        </div>
+    </section>
+    <section id="usage" class="p-8 bg-gray-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-4">How to Use ZEUS</h2>
+            <!-- Content -->
+        </div>
+    </section>
+    <section id="faq" class="p-8">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+            <!-- Content -->
+        </div>
+    </section>
+    <section id="contributing" class="p-8 bg-gray-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-4">Contributing to ZEUS</h2>
+            <!-- Content -->
+        </div>
+    </section>
+    <section id="tutorials" class="p-8 bg-white">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-4">Tutorials</h2>
+            <!-- Content -->
+        </div>
+    </section>
+    <section id="case-studies" class="p-8 bg-gray-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-4">Case Studies</h2>
+            <!-- Content -->
+        </div>
+    </section>
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-
