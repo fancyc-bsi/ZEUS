@@ -17,15 +17,8 @@
 
 ## Introduction
 
-ZEUS is an advanced web application security scanner that uses OWASP ZAP as a backend to detect vulnerabilities efficiently and accurately. Designed for security professionals and developers alike, ZEUS extends the capabilities of traditional scanners by verifying detected issues to minimize false positives and providing comprehensive, easy-to-understand reports.
-
-## Key Features
-
-- **Automated Scanning:** Utilizes OWASP ZAP for thorough and efficient vulnerability detection.
-- **Findings Verification:** Employs custom Rust code to validate findings, ensuring reliability in the results reported.
-- **Customizable Scan Policies:** Allows users to tailor scanning processes via YAML configuration files.
-- **Dynamic Reporting:** Generates detailed, actionable reports in various formats including HTML, CSV, and JSON.
+Zeus is an adaptable web application scanner designed to conduct comprehensive scans and verify results with higher confidence. 
 
 ## Documentation
 
-For more detailed information on installation, configuration, and usage of ZEUS, please refer to our [Documentation Page](#). This page includes step-by-step guides, configuration examples, and tips for integrating ZEUS into your development process.
+For more detailed information on installation, configuration, and usage of ZEUS, please refer to the documentation: https://fancyc-bsi.github.io/ZEUS/.
