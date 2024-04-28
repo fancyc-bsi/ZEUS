@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - ZEUS Wiki</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="font-sans bg-gray-800 text-gray-200">
+    <div class="md:flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-700 text-gray-300 p-6 sticky top-0 h-screen overflow-y-auto">
+            <div class="text-xl font-bold text-white mb-6">ZEUS Wiki</div>
+            <ul class="space-y-4">
+                <li><a href="index.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Introduction</a></li>
+                <li><a href="getting-started.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Getting Started</a></li>
+                <li><a href="usage.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Usage</a></li>
+                <li><a href="configuration.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Configuration</a></li>
+                <li><a href="bsti-integration.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">BSTI Integration</a></li>
+                <!-- <li><a href="scan_policy.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Scan Policies</a></li> -->
+                <li><a href="changelog.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Changelog</a></li>
+                <li><a href="roadmap.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Roadmap</a></li>
+            
+            </ul>
+        </aside>
+
+
+
+        <!-- Main Content for Getting Started -->
+        <main class="flex-1">
+            <section class="p-8 bg-gray-900 shadow-lg rounded-lg m-6">
+                <h1 class="text-4xl font-bold text-white mb-6">Getting Started with ZEUS</h1>
+                <p class="text-lg text-gray-300 mb-4">Welcome to the ZEUS platform. Follow these detailed instructions to get set up and start your first scan.</p>
+                
+                <div class="my-5">
+                    <h2 class="text-3xl font-semibold text-white mb-3">Install Requirements</h2>
+                    <p class="mb-2 text-gray-400">Copy and run these commands in your terminal to install required software:</p>
+                    
+                    <!-- Linux Install Command -->
+                    <div class="bg-gray-800 p-2 rounded mb-4">
+                        <p class="text-sm text-gray-400">Linux (Debian/Ubuntu):</p>
+                        <div class="flex items-center">
+                            <code class="text-xs bg-gray-700 rounded p-2 flex-grow">sudo apt install firefox default-jdk</code>
+                            <button onclick="copyToClipboard('linuxCmd')" class="ml-2 bg-blue-600 hover:bg-blue-800 text-white font-bold py-1 px-2 rounded text-xs">Copy</button>
+                        </div>
+                        <span id="linuxCmd" class="hidden">sudo apt install firefox default-jdk</span>
+                    </div>
+                    
+                    <div class="bg-gray-800 p-4 rounded flex flex-col">
+                        <p class="text-sm text-gray-400 mb-2">Windows:</p>
+                        <ul class="list-disc pl-4 text-gray-200">
+                            <li><strong>Java 11+</strong>: <a href="https://adoptium.net/" class="text-blue-400 hover:text-blue-600" target="_blank">adoptium.net</a></li>
+                            <li><strong>Firefox</strong>: <a href="https://www.mozilla.org/en-CA/firefox/new/" class="text-blue-400 hover:text-blue-600" target="_blank">mozilla.org</a></li>
+                        </ul>
+                    </div>                    
+                </div>
+                
+                <div class="my-5">
+                    <h2 class="text-3xl font-semibold text-white mb-3">Configuration</h2>
+                    <p class="text-gray-400">Customize ZEUS according to your scanning needs as detailed in the configuration guide provided within the documentation.</p>
+                </div>
+                
+                <div class="my-5">
+                    <h2 class="text-3xl font-semibold text-white mb-3">Running Your First Scan</h2>
+                    <p class="mb-2 text-gray-400">Learn how to conduct your first scan here:</p>
+                    <a href="usage.html" class="text-blue-500 hover:text-blue-700 hover:underline">Usage Guide</a>
+                </div>
+            </section>
+        </main>     
+    </div>
+
+    <script>
+        function copyToClipboard(elementId) {
+            var text = document.getElementById(elementId).innerText;
+            var elem = document.createElement("textarea");
+            document.body.appendChild(elem);
+            elem.value = text;
+            elem.select();
+            document.execCommand("copy");
+            document.body.removeChild(elem);
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

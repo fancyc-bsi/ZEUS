@@ -1,0 +1,8 @@
+/target
+/test
+/items
+/.vscode
+build.sh
+/build
+/src/ZAP
+*.yaml

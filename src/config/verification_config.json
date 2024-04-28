@@ -1,0 +1,320 @@
+{
+  "findings": [
+    {
+      "name": "Content Security Policy (CSP) Header Not Set",
+      "wstg_category": "WSTG-CONF-06",
+      "matcher": {
+        "type": "reverse",
+        "headers": ["Content-Security-Policy"]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "X-Content-Type-Options Header Missing",
+      "wstg_category": "WSTG-CONF-06",
+      "matcher": {
+        "type": "reverse",
+        "headers": ["X-Content-Type-Options"]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+      "wstg_category": "WSTG-INFO-02",
+      "matcher": {
+        "type": "regex",
+        "scope": "header",
+        "pattern": ".*(Apache|nginx|IIS)/\\d+\\.\\d+(\\.\\d+)?"
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "Missing Anti-clickjacking Header",
+      "wstg_category": "WSTG-CLNT-01",
+      "matcher": {
+        "type": "reverse",
+        "headers": ["X-Frame-Options"]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "Strict-Transport-Security Header Not Set",
+      "wstg_category": "WSTG-CONF-06",
+      "matcher": {
+        "type": "reverse",
+        "headers": ["Strict-Transport-Security"]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "Cookie without SameSite Attribute",
+      "wstg_category": "WSTG-SESS-02",
+      "matcher": {
+        "type": "regex",
+        "scope": "header",
+        "pattern": "^(?=.*Set-Cookie)(?=.*SameSite=None)(?=.*Secure)"
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "Cookie Without Secure Flag",
+      "wstg_category": "WSTG-SESS-02",
+      "matcher": {
+        "type": "regex",
+        "scope": "header",
+        "pattern": "(?i)^Set-Cookie:.*(?<!Secure;)"
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "Strict-Transport-Security Missing Max-Age (Non-compliant with Spec)",
+      "wstg_category": "WSTG-CONF-06",
+      "matcher": {
+        "type": "regex",
+        "scope": "header",
+        "pattern": "Strict-Transport-Security:.*max-age=0"
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": ".htaccess Information Leak",
+      "wstg_category": "WSTG-INFO-03",
+      "matcher": {
+        "type": "compound",
+        "logic": "or",
+        "conditions": [
+          {
+            "type": "status",
+            "status_code": 200
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "AddType|AddHandler|AuthType|Require"
+          }
+        ]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "web"
+    },
+    {
+      "name": "Cross Site Scripting (Reflected)",
+      "wstg_category": "WSTG-INPV-01",
+      "matcher": {
+        "type": "regex",
+        "scope": "body",
+        "pattern": ">(?i)<script>alert\\(1\\);<\\/script>"
+      },
+      "screenshot_required": false
+    },
+    {
+      "name": "SQL Injection - Detection",
+      "wstg_category": "WSTG-INPV-05",
+      "matcher": {
+        "type": "compound",
+        "logic": "or",
+        "conditions": [
+          {
+            "type": "status",
+            "status_code": 500
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "SQL syntax.*MySQL"
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "Unclosed quotation mark after the character string"
+          }
+        ]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "web"
+    },
+    {
+      "name": "SQL Injection - SQLite",
+      "wstg_category": "WSTG-INPV-05",
+      "matcher": {
+        "type": "compound",
+        "logic": "or",
+        "conditions": [
+          {
+            "type": "status",
+            "status_code": 500
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "syntax error"
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "SQLITE_ERROR"
+          }
+        ]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "web"
+    },
+    {
+      "name": "Directory Browsing",
+      "wstg_category": "WSTG-CONF-05",
+      "matcher": {
+        "type": "compound",
+        "logic": "and",
+        "conditions": [
+          {
+            "type": "status",
+            "status_code": 200
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "Index of"
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "<a href=\"[^\"]+\">[^<]+</a>"
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "(?i)(Name|Last modified|Size)"
+          }
+        ]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "web"
+    },
+    {
+      "name": "Vulnerable JS Library",
+      "wstg_category": "WSTG-CLNT-01",
+      "matcher": {
+        "type": "regex",
+        "scope": "body",
+        "pattern": "jquery[\\.-]([0-2]\\.[0-9]\\.[0-9]|[3]\\.[0-4]\\.[0-9])(\\.min)?\\.js"
+      },
+      "screenshot_required": true,
+      "screenshot_type": "web"
+    },    
+    {
+      "name": "Cross-Domain Misconfiguration",
+      "wstg_category": "WSTG-CONF-07",
+      "matcher": {
+        "type": "compound",
+        "logic": "or",
+        "conditions": [
+          {
+            "type": "regex",
+            "scope": "header",
+            "pattern": "(?i)Access-Control-Allow-Origin: *" 
+          },
+          {
+            "type": "regex",
+            "scope": "header",
+            "pattern": "(?i)Access-Control-Allow-Credentials: true"
+          }
+        ]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "Absence of Anti-CSRF Tokens",
+      "wstg_category": "WSTG-SESS-04",
+      "matcher": {
+        "type": "compound",
+        "logic": "and",
+        "conditions": [
+          {
+            "type": "status",
+            "status_code": 200
+          },
+          {
+            "type": "reverse",
+            "headers": ["X-CSRF-Token"]
+          }
+        ]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    },
+    {
+      "name": "Path Traversal",
+      "wstg_category": "WSTG-ATHZ-01",
+      "matcher": {
+        "type": "regex",
+        "scope": "body",
+        "pattern": "\\..\\/\\..\\/"
+      },
+      "screenshot_required": true,
+      "screenshot_type": "web"
+    },
+    {
+      "name": "Remote File Inclusion",
+      "wstg_category": "WSTG-INPV-11",
+      "matcher": {
+        "type": "regex",
+        "scope": "body",
+        "pattern": "Fatal error:.*: Failed opening required"
+      },
+      "screenshot_required": true,
+      "screenshot_type": "web"
+    },
+    {
+      "name": "Server Side Template Injection",
+      "wstg_category": "WSTG-INPV-12",
+      "matcher": {
+        "type": "compound",
+        "logic": "and",
+        "conditions": [
+          {
+            "type": "status",
+            "status_code": 200
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "{{.*}}"
+          }
+        ]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "web"
+    },
+    {
+      "name": "Weak Authentication Method",
+      "wstg_category": "WSTG-AUTH-01",
+      "matcher": {
+        "type": "compound",
+        "logic": "or",
+        "conditions": [
+          {
+            "type": "regex",
+            "scope": "header",
+            "pattern": "(?i)WWW-Authenticate: Basic"
+          },
+          {
+            "type": "regex",
+            "scope": "body",
+            "pattern": "<form.*>.*<input.*type=['\"]?password['\"]?.*>.*</form>"
+          }
+        ]
+      },
+      "screenshot_required": true,
+      "screenshot_type": "file"
+    }
+  ]
+}

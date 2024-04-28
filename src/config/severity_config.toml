@@ -1,0 +1,41 @@
+["Content Security Policy (CSP) Header Not Set"]
+severity = "Low"
+
+["X-Content-Type-Options Header Missing"]
+severity = "Low"
+
+["Server Leaks Version Information via \"Server\" HTTP Response Header Field"]
+severity = "Low"
+
+["Missing Anti-clickjacking Header"]
+severity = "Low"
+
+["Strict-Transport-Security Header Not Set"]
+severity = "Low"
+
+["Cookie without SameSite Attribute"]
+severity = "Low"
+
+["Cookie Without Secure Flag"]
+severity = "Low"
+
+["Strict-Transport-Security Missing Max-Age (Non-compliant with Spec)"]
+severity = "Low"
+
+[".htaccess Information Leak"]
+severity = "High"
+
+["Cross Site Scripting (Reflected)"]
+severity = "High"
+
+["Session ID in URL Rewrite"]
+severity = "Informational"
+
+["Cross-Domain Misconfiguration"]
+severity = "Low"
+
+["Cloud Metadata Potentially Exposed"]
+severity = "Informational"
+
+["Timestamp Disclosure - Unix"]
+severity = "Informational"

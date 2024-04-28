@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZEUS Wiki</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="font-sans bg-gray-800 text-gray-200">
+    <div class="md:flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-700 text-gray-300 p-6 sticky top-0 h-screen overflow-y-auto">
+            <div class="text-xl font-bold text-white mb-6">ZEUS Wiki</div>
+            <ul class="space-y-4">
+                <li><a href="index.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Introduction</a></li>
+                <li><a href="getting-started.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Getting Started</a></li>
+                <li><a href="usage.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Usage</a></li>
+                <li><a href="configuration.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Configuration</a></li>
+                <li><a href="bsti-integration.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">BSTI Integration</a></li>
+                <!-- <li><a href="scan_policy.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Scan Policies</a></li> -->
+                <li><a href="changelog.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Changelog</a></li>
+                <li><a href="roadmap.html" class="block hover:bg-gray-600 rounded px-4 py-2 text-gray-200">Roadmap</a></li>
+            
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            <section class="p-8 bg-gray-900 shadow-lg rounded-lg m-4">
+                <h1 class="text-3xl font-bold text-white mb-4">ZAP Automation Configuration</h1>
+                
+                <h2 class="text-2xl text-white mb-3">Environment Settings</h2>
+                <p class="mb-2">Defines the core environment settings including contexts and authentication.</p>
+                <pre class="bg-gray-700 rounded p-3 mb-4"><code>env:
+  contexts:
+    - name: context 1
+      urls:
+        - "http://example.com"</code></pre>
+                
+                <h2 class="text-2xl text-white mb-3">Authentication and Verification</h2>
+                <p class="mb-2">Details on authentication methods and verification mechanisms to ensure validity of session states.</p>
+                <pre class="bg-gray-700 rounded p-3 mb-4"><code>authentication:
+  method: form
+  parameters:
+    loginPageUrl: "http://example.com/login"
+    loginRequestUrl: "http://example.com/session"
+    loginRequestBody: "username={username}&password={password}"
+verification:
+  method: response
+  loggedInRegex: "Log Out"</code></pre>
+                
+                <h2 class="text-2xl text-white mb-3">Session Management and Technology Settings</h2>
+                <p class="mb-2">Configures session handling and specifies technologies to include or exclude during scans.</p>
+                <pre class="bg-gray-700 rounded p-3 mb-4"><code>sessionManagement:
+  method: cookie
+technology:
+  include:
+    - "SQL Injection"
+    - "XSS"</code></pre>
+
+                <h2 class="text-2xl text-white mb-3">Job Configurations</h2>
+                <p class="mb-2">Sets defines jobs like requestor and alert filters with specific parameters.</p>
+
+        <pre class="bg-gray-700 rounded p-3 mb-4"><code>- type: alertFilter
+  parameters:
+    deleteGlobalAlerts: true
+  alertFilters:
+    - ruleId: 10010
+      newRisk: High
+      context: User Authentication
+      url: "http://example.com/login"
+      urlRegex: false
+      parameter: "sessionToken"
+      parameterRegex: true
+      attack: "SQL Injection"
+      attackRegex: false
+      evidence: "Unauthorized"
+      evidenceRegex: true
+    - ruleId: 20020
+      newRisk: Info
+      context: Public API
+      url: "http://api.example.com/v1/"
+      urlRegex: true</code></pre>
+          
+          <pre class="bg-gray-700 rounded p-3 mb-4"><code>- type: requestor
+  parameters:
+    user: adminUser
+  requests:
+    - url: "http://example.com/api/data"
+      method: POST
+      httpVersion: HTTP/2
+      headers:
+        - "Content-Type:application/json"
+        - "Authorization:Bearer {token}"
+      data: '{"query":"fetch"}'
+      responseCode: 200
+    - url: "http://example.com/api/update"
+      method: PUT
+      httpVersion: HTTP/1.1
+      headers:
+        - "Content-Type:application/json"
+        - "X-Custom-Header:1234"
+      data: '{"update":"true"}'
+      responseCode: 202</code></pre>
+          
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
