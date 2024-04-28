@@ -10,7 +10,6 @@
   <h3>ZEUS</h3>
   <p>An advanced web application security scanner powered by OWASP ZAP</p>
   <img src="https://img.shields.io/website?url=https://fancyc-bsi.github.io/ZEUS/" alt="Documentation Status" />
-  <img src="https://img.shields.io/github/downloads/fancyc-bsi/ZEUS/total" alt="Downloads" />
 </div>
 
 
