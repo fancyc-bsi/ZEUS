@@ -8,7 +8,7 @@
 
 <div align="center">
   <h3>ZEUS</h3>
-  <p>An advanced web application security scanner powered by Rust and OWASP ZAP</p>
+  <p>An advanced web application security scanner powered by Rust and <a href="https://www.zaproxy.org/">ZAP</a>.</p>
   <img src="https://img.shields.io/website?url=https://fancyc-bsi.github.io/ZEUS/" alt="Documentation Status" />
 </div>
 
