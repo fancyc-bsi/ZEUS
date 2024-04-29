@@ -50,6 +50,7 @@ async fn main() {
     let http_proxy = matches.value_of("HTTP_PROXY");
     let disable_progress_bars = matches.is_present("NO_PROGRESS");
     let login_config_path = matches.value_of("LOGIN_CONFIG");
+    let ajax_scan_enabled = matches.is_present("AJAX_SCAN");
 
     let validator = Validator::new(http_proxy.map(String::from));
     validator.run_validations(http_proxy.unwrap_or(""), target_url, login_config_path).await;
@@ -63,22 +64,23 @@ async fn main() {
     let geckodriver_path = zap_client.get_firefox_binary().await.expect("Failed to get Geckodriver path");
     setup_firefox_driver(geckodriver_path).await;
 
-    
     if let Some(_config_path) = login_config_path {
         run_login_config_plan(&login_config_path, &zap_client, &http_proxy, &project_folder_path, &target_url).await;
     } else {
         let spider_id = start_spider_scan(&zap_client, &target_url).await;
         monitor_spider_scan_progress(&zap_client, &spider_id, disable_progress_bars).await;
     
-        let ajax_scan_result = zap_client.start_ajax_spider(&target_url).await;
-        match ajax_scan_result {
-            Ok(result) => {
-                info!("AJAX Spider started: {}", result);
-                monitor_ajax_spider_progress(&zap_client, disable_progress_bars).await;
-            },
-            Err(e) => {
-                error!("Error starting AJAX Spider: {}", e);
-                return;
+        if ajax_scan_enabled { 
+            let ajax_scan_result = zap_client.start_ajax_spider(&target_url).await;
+            match ajax_scan_result {
+                Ok(result) => {
+                    info!("AJAX Spider started: {}", result);
+                    monitor_ajax_spider_progress(&zap_client, disable_progress_bars).await;
+                },
+                Err(e) => {
+                    error!("Error starting AJAX Spider: {}", e);
+                    return;
+                }
             }
         }
     
@@ -415,6 +417,10 @@ fn parse_arguments() -> clap::ArgMatches {
         .arg(Arg::with_name("BROWSER")
             .help("Launches ZAP in browser mode with HUD")
             .long("browser")
+            .takes_value(false))
+        .arg(Arg::with_name("AJAX_SCAN") 
+            .help("Enables AJAX scanning for JS heavy apps - MUCH slower and more resource intense")
+            .long("ajax-scan")
             .takes_value(false))
         .get_matches()
 }
