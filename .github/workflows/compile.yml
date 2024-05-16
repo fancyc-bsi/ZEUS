@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windows-binary
-          path: target/x86_64-pc-windows-gnu/release/zeus
+          path: target/x86_64-pc-windows-gnu/release/zeus.exe
 
   build-macos:
     runs-on: macos-latest
