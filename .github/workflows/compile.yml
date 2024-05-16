@@ -1,6 +1,6 @@
 name: Rust Cross-Compile
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build-linux:
@@ -18,14 +18,15 @@ jobs:
         run: cargo build --release --target x86_64-unknown-linux-gnu
       - name: Prepare artifact
         run: |
-          mkdir -p artifact
+          mkdir -p artifact/src/ZAP artifact/src/config
           cp target/x86_64-unknown-linux-gnu/release/zeus artifact/
-          cp -r src/ZAP artifact/
-          cp -r src/config artifact/
+          chmod +x artifact/zeus
+          cp -r src/ZAP/* artifact/src/ZAP/
+          cp -r src/config/* artifact/src/config/
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: linux-binary
+          name: zeus_linux_x64
           path: artifact/**
 
   build-windows:
@@ -45,14 +46,14 @@ jobs:
         run: cargo build --release --target x86_64-pc-windows-gnu
       - name: Prepare artifact
         run: |
-          mkdir -p artifact
+          mkdir -p artifact/src/ZAP artifact/src/config
           cp target/x86_64-pc-windows-gnu/release/zeus.exe artifact/
-          cp -r src/ZAP artifact/
-          cp -r src/config artifact/
+          cp -r src/ZAP/* artifact/src/ZAP/
+          cp -r src/config/* artifact/src/config/
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: windows-binary
+          name: zeus_windows_x64
           path: artifact/**
 
   build-macos:
@@ -70,12 +71,13 @@ jobs:
         run: cargo build --release --target x86_64-apple-darwin
       - name: Prepare artifact
         run: |
-          mkdir -p artifact
+          mkdir -p artifact/src/ZAP artifact/src/config
           cp target/x86_64-apple-darwin/release/zeus artifact/
-          cp -r src/ZAP artifact/
-          cp -r src/config artifact/
+          chmod +x artifact/zeus
+          cp -r src/ZAP/* artifact/src/ZAP/
+          cp -r src/config/* artifact/src/config/
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: macos-binary
+          name: zeus_macos_x64
           path: artifact/**
