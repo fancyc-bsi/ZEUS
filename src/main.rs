@@ -1,43 +1,40 @@
-use clap::{App, Arg};
-use env_logger::Builder;
-use env_logger::Env;
-use report_generator::html_report::VerifiedFinding;
-use serde_json::Value;
-use tokio;
-use log::{info, warn, error};
-use reqwest::Client;
-use validator::Validator;
-use std::io::BufRead;
-use std::path::Path;
-use std::process;
-use std::time::Duration;
-use zap_integration::zap_api::run_zap;
+use std::collections::HashMap;
+use std::env;
 use std::fs;
 use std::io;
-use std::env;
+use std::io::BufRead;
+use std::io::Write;
+use std::path::Path;
 use std::path::PathBuf;
-use verification::verifier::Verifier;
-use std::collections::HashMap;
-use results_parser::parser::{parse_json, generate_csv_from_verified_findings, Finding};
-use crate::report_generator::html_report::generate_html_report;
-use crate::results_parser::parser::load_config;
+use std::process;
+use std::time::Duration;
+
+use chrono;
+use clap::{App, Arg};
+use colored::*;
+use env_logger::Builder;
+use env_logger::Env;
+use indicatif::{ProgressBar, ProgressStyle};
+use log::{error, info, warn};
+use regex::Regex;
+use reqwest::Client;
+use serde_json::Value;
+use tempfile::NamedTempFile;
+use tokio;
+
+use report_generator::html_report::VerifiedFinding;
+use results_parser::parser::{Finding, generate_csv_from_verified_findings, parse_json};
 use utils::setup_geckodriver::geckodriver_runner;
 use utils::setup_warp::serve_html;
-use crate::results_parser::parser::apply_severity_overrides;
-use indicatif::{ProgressBar, ProgressStyle};
-use tempfile::NamedTempFile;
-use regex::Regex;
-use colored::*;
-use chrono;
-use std::io::Write;
+use validator::Validator;
+use verification::verifier::Verifier;
+use zap_integration::zap_api::run_zap;
+use zeus::*;
 
-mod validator;
-mod zap_integration;
-mod results_parser;
-mod report_generator;
-mod verification;
-mod utils;
-mod translator;
+use crate::report_generator::html_report::generate_html_report;
+use crate::results_parser::parser::apply_severity_overrides;
+use crate::results_parser::parser::load_config;
+
 #[tokio::main]
 async fn main() {
     print_banner();
@@ -261,13 +258,10 @@ async fn monitor_spider_scan_progress(zap_client: &zap_integration::zap_client::
 
 async fn start_active_scan(zap_client: &zap_integration::zap_client::ZapClient, target_url: &str) -> String {
     info!("Starting active scan ...");
-    match zap_client.start_scan(target_url).await {
-        Ok(scan_id) => scan_id,
-        Err(e) => {
-            error!("Error starting active scan: {}", e);
-            "".to_string()
-        }
-    }
+    zap_client.start_scan(target_url).await.unwrap_or_else(|e| {
+        error!("Error starting active scan: {}", e);
+        "".to_string()
+    })
 }
 
 async fn monitor_active_scan_progress(zap_client: &zap_integration::zap_client::ZapClient, scan_id: &str, disable_progress_bars: bool) {
@@ -573,7 +567,7 @@ async fn verify_findings(verifier: &mut Verifier, _client: &Client, findings: Ha
             .find(|f| f.name == finding.name)
             .map(|fc| fc.wstg_category.clone().unwrap_or_else(|| String::from("WSTG Category Not Found")));
 
-        let wstg_category_unwrapped = wstg_category.unwrap_or_else(|| String::from("WSTG Category Not Found")); // Unwrap here
+        let wstg_category_unwrapped = wstg_category.unwrap_or_else(|| String::from("WSTG Category Not Found"));
 
         if let Ok(verified) = verification_result {
             verified_findings.push(VerifiedFinding {

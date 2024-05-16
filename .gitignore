@@ -4,5 +4,5 @@
 /.vscode
 build.sh
 /build
-/src/ZAP
 *.yaml
+src/ZAP/lang

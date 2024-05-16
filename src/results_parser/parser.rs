@@ -1,12 +1,14 @@
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use std::collections::HashMap;
-use std::io::Read;
-use std::path::Path;
-use csv::Writer;
 use std::error::Error;
 use std::fs;
+use std::io::Read;
+use std::path::Path;
+
+use csv::Writer;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use toml::Value as TomlValue;
+
 use crate::report_generator::html_report::VerifiedFinding;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -34,7 +36,10 @@ pub struct Finding {
     pub uris: Vec<String>,
 }
 
-pub fn apply_severity_overrides(findings: &mut HashMap<String, Finding>, config: &str) -> Result<(), Box<dyn Error>> {
+pub fn apply_severity_overrides(
+    findings: &mut HashMap<String, Finding>,
+    config: &str,
+) -> Result<(), Box<dyn Error>> {
     let config: TomlValue = toml::from_str(config)?;
 
     for (name, finding) in findings.iter_mut() {
@@ -63,7 +68,6 @@ pub fn load_config() -> Option<String> {
     }
 }
 
-
 pub fn parse_json(raw_json: &str) -> Result<HashMap<String, Finding>, Box<dyn Error>> {
     let parsed: Value = serde_json::from_str(raw_json)?;
     let mut findings: HashMap<String, Finding> = HashMap::new();
@@ -74,14 +78,16 @@ pub fn parse_json(raw_json: &str) -> Result<HashMap<String, Finding>, Box<dyn Er
                 for alert_value in alerts {
                     let alert: Alert = serde_json::from_value(alert_value.clone())?;
 
-                    let finding = findings.entry(alert.name.clone()).or_insert_with(|| Finding {
-                        name: alert.name.clone(),
-                        riskdesc: alert.riskdesc.clone(),
-                        desc: alert.desc.clone(),
-                        solution: alert.solution.clone(),
-                        reference: alert.reference.clone(),
-                        uris: Vec::new(),
-                    });
+                    let finding = findings
+                        .entry(alert.name.clone())
+                        .or_insert_with(|| Finding {
+                            name: alert.name.clone(),
+                            riskdesc: alert.riskdesc.clone(),
+                            desc: alert.desc.clone(),
+                            solution: alert.solution.clone(),
+                            reference: alert.reference.clone(),
+                            uris: Vec::new(),
+                        });
 
                     for instance in &alert.instances {
                         if !finding.uris.contains(&instance.uri) {
@@ -96,17 +102,33 @@ pub fn parse_json(raw_json: &str) -> Result<HashMap<String, Finding>, Box<dyn Er
     Ok(findings)
 }
 
-
-pub fn generate_csv_from_verified_findings(findings: &[VerifiedFinding], csv_file_path: &Path) -> Result<(), Box<dyn Error>> {
+pub fn generate_csv_from_verified_findings(
+    findings: &[VerifiedFinding],
+    csv_file_path: &Path,
+) -> Result<(), Box<dyn Error>> {
     let mut wtr = Writer::from_path(csv_file_path)?;
 
     wtr.write_record(&[
-        "Plugin ID", "CVE", "Risk", "Host", "Protocol", "Port", "Name",
-        "Description", "Solution", "See Also", "References"
+        "Plugin ID",
+        "CVE",
+        "Risk",
+        "Host",
+        "Protocol",
+        "Port",
+        "Name",
+        "Description",
+        "Solution",
+        "See Also",
+        "References",
     ])?;
-    
+
     for verified_finding in findings {
-        let severity = verified_finding.finding.riskdesc.split_whitespace().next().unwrap_or("Unknown");
+        let severity = verified_finding
+            .finding
+            .riskdesc
+            .split_whitespace()
+            .next()
+            .unwrap_or("Unknown");
         let plugin_id = "";
         let protocol = "";
         let port = "";
@@ -131,7 +153,6 @@ pub fn generate_csv_from_verified_findings(findings: &[VerifiedFinding], csv_fil
             &verified_finding.finding.reference,
         ])?;
     }
-
 
     wtr.flush()?;
     Ok(())
