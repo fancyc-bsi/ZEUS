@@ -3,13 +3,8 @@ name: Rust Cross-Compile
 on: [push]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        target: [x86_64-unknown-linux-gnu, x86_64-pc-windows-gnu, x86_64-apple-darwin]
-
     steps:
       - uses: actions/checkout@v2
       - name: Install Rust
@@ -17,12 +12,50 @@ jobs:
         with:
           toolchain: stable
           override: true
-      - name: Add targets
-        run: rustup target add ${{ matrix.target }}
+      - name: Add target
+        run: rustup target add x86_64-unknown-linux-gnu
       - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo build --release --target x86_64-unknown-linux-gnu
       - name: Upload binary
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.target }}-binary
-          path: target/${{ matrix.target }}/release/zeus
+          name: linux-binary
+          path: target/x86_64-unknown-linux-gnu/release/zeus
+
+  build-windows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Add target
+        run: rustup target add x86_64-pc-windows-gnu
+      - name: Build
+        run: cargo build --release --target x86_64-pc-windows-gnu
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows-binary
+          path: target/x86_64-pc-windows-gnu/release/zeus
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Add target
+        run: rustup target add x86_64-apple-darwin
+      - name: Build
+        run: cargo build --release --target x86_64-apple-darwin
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: macos-binary
+          path: target/x86_64-apple-darwin/release/zeus
