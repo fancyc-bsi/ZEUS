@@ -148,7 +148,7 @@ impl Validator {
     }
 
     fn check_ports_in_use() -> bool {
-        let ports = [8080, 10923];
+        let ports = [10923];
         for port in ports.iter() {
             if TcpListener::bind(("127.0.0.1", *port)).is_err() {
                 error!(
