@@ -5,3 +5,5 @@
 build.sh
 /build
 *.yaml
+/demo
+zap_output.log

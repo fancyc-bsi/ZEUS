@@ -41,6 +41,9 @@ async fn main() {
     initialize_logging();
     let matches = parse_arguments();
 
+    let zap_port = matches.value_of("ZAP_PORT").unwrap_or("8080");
+    let zap_base_url = format!("http://localhost:{}", zap_port);
+
     let browser_mode = matches.is_present("BROWSER");
     let target_url = matches.value_of("TARGET_URL").unwrap();
     let project_folder = matches.value_of("PROJECT_FOLDER").unwrap();
@@ -53,17 +56,16 @@ async fn main() {
     validator.run_validations(http_proxy.unwrap_or(""), target_url, login_config_path).await;
     let project_folder_path = PathBuf::from(&project_folder);
     ensure_project_folder_exists(&project_folder_path);
-    spawn_background_tasks(browser_mode, Some(target_url.to_string())).await; 
+    spawn_background_tasks(browser_mode, Some(target_url.to_string()), zap_port.to_string()).await; 
     wait_for_zap_startup().await;
     let client = Client::new();
-    check_zap_api_accessibility(&client).await;
-    let zap_client = setup_zap_client(&http_proxy).await;
+    check_zap_api_accessibility(&client, zap_base_url.as_str()).await;
+    let zap_client = setup_zap_client(&http_proxy, zap_base_url.as_str()).await;
     let geckodriver_path = zap_client.get_firefox_binary().await.expect("Failed to get Geckodriver path");
     setup_firefox_driver(geckodriver_path).await;
 
     if let Some(_config_path) = login_config_path {
-        run_login_config_plan(&login_config_path, &zap_client, &http_proxy, &project_folder_path, &target_url).await;
-    } else {
+        run_login_config_plan(&login_config_path, &zap_client, &http_proxy, &project_folder_path, &target_url, zap_base_url.as_str()).await;    } else {
         let spider_id = start_spider_scan(&zap_client, &target_url).await;
         monitor_spider_scan_progress(&zap_client, &spider_id, disable_progress_bars).await;
     
@@ -93,17 +95,18 @@ async fn main() {
     let verified_findings = perform_verification_process(&http_proxy, &client, &zap_client, &project_folder_path).await;
     generate_reports(&verified_findings, &project_folder_path, &zap_client).await;
 
-    shutdown_zap(&client).await;
+    shutdown_zap(&client, zap_base_url.as_str()).await;
 }
 
-async fn spawn_background_tasks(browser_mode: bool, target_url: Option<String>) {
+async fn spawn_background_tasks(browser_mode: bool, target_url: Option<String>, zap_port: String) {
     tokio::spawn(async {
         serve_html().await;
     });
     tokio::spawn(async move {
-        run_zap(browser_mode, target_url.as_deref());
+        run_zap(browser_mode, target_url.as_deref(), &zap_port);
     });
 }
+
 
 fn print_banner() {
     println!("{}", r"
@@ -166,9 +169,9 @@ fn finish_progress_bar(pb: &Option<ProgressBar>, message: String) {
     }
 }
 
-async fn check_zap_api_accessibility(client: &Client) {
-    let base_url = "http://localhost:8080";
-    let health_check_url = format!("{}/JSON/", base_url);
+async fn check_zap_api_accessibility(client: &Client, zap_base_url: &str) {
+    let health_check_url = format!("{}/JSON/", zap_base_url);
+    
     loop {
         match client.get(&health_check_url).send().await {
             Ok(response) if response.status().is_success() => {
@@ -207,8 +210,8 @@ async fn monitor_ajax_spider_progress(zap_client: &zap_integration::zap_client::
     }
 }
 
-async fn setup_zap_client(http_proxy: &Option<&str>) -> zap_integration::zap_client::ZapClient {
-    let zap_client = zap_integration::zap_client::ZapClient::new("http://localhost:8080".to_string());
+async fn setup_zap_client(http_proxy: &Option<&str>, zap_base_url: &str) -> zap_integration::zap_client::ZapClient {
+    let zap_client = zap_integration::zap_client::ZapClient::new(zap_base_url.to_string());
     if let Some(proxy) = http_proxy {
         if let Some((host, port)) = proxy.split_once(':') {
             zap_client.set_http_proxy(host, port).await.expect("Failed to set HTTP proxy");
@@ -223,9 +226,9 @@ async fn setup_zap_client(http_proxy: &Option<&str>) -> zap_integration::zap_cli
     zap_client
 }
 
-async fn run_login_config_plan(login_config_path: &Option<&str>, _zap_client: &zap_integration::zap_client::ZapClient, http_proxy: &Option<&str>, project_folder_path: &PathBuf, target_url: &str) {
+async fn run_login_config_plan(login_config_path: &Option<&str>, _zap_client: &zap_integration::zap_client::ZapClient, http_proxy: &Option<&str>, project_folder_path: &PathBuf, target_url: &str, zap_base_url: &str) {
     if let Some(config_path) = login_config_path {
-        run_zap_automation_plan(config_path, http_proxy, project_folder_path, target_url).await;
+        run_zap_automation_plan(config_path, http_proxy, project_folder_path, target_url, zap_base_url).await;
     }
 }
 
@@ -340,9 +343,8 @@ async fn generate_reports(verified_findings: &Vec<VerifiedFinding>, project_fold
 
 
 
-async fn shutdown_zap(client: &Client) {
-    let base_url = "http://localhost:8080";
-    let shutdown_url = format!("{}/JSON/core/action/shutdown", base_url);
+async fn shutdown_zap(client: &Client, zap_base_url: &str) {
+    let shutdown_url = format!("{}/JSON/core/action/shutdown", zap_base_url);
     match client.get(&shutdown_url).send().await {
         Ok(response) if response.status().is_success() => {
             info!("ZAP is shutting down...");
@@ -384,7 +386,7 @@ fn initialize_logging() {
 
 fn parse_arguments() -> clap::ArgMatches {
     App::new("ZEUS")
-        .version("0.1.0")
+        .version("0.1.1")
         .author("Connor Fancy")
         .about("Advanced webapp scanner backed by ZAP")
         .arg(Arg::with_name("TARGET_URL")
@@ -416,6 +418,10 @@ fn parse_arguments() -> clap::ArgMatches {
             .help("Enables AJAX scanning for JS heavy apps - MUCH slower and more resource intense")
             .long("ajax-scan")
             .takes_value(false))
+        .arg(Arg::with_name("ZAP_PORT")
+            .help("Specify the port for ZAP to use (default: 8080)")
+            .long("zap-port")
+            .takes_value(true))
         .get_matches()
 }
 
@@ -430,7 +436,7 @@ fn ensure_project_folder_exists(project_folder_path: &PathBuf) {
 }
 
 
-async fn run_zap_automation_plan(config_path: &str, _http_proxy: &Option<&str>, project_folder_path: &PathBuf, target_url: &str) {
+async fn run_zap_automation_plan(config_path: &str, _http_proxy: &Option<&str>, project_folder_path: &PathBuf, target_url: &str, zap_base_url: &str) {
     let config_str = match fs::read_to_string(config_path) {
         Ok(config) => config,
         Err(e) => {
@@ -454,15 +460,13 @@ async fn run_zap_automation_plan(config_path: &str, _http_proxy: &Option<&str>, 
         return;
     }
 
-    let zap_client = zap_integration::zap_client::ZapClient::new("http://localhost:8080".to_string());
+    // Initialize zap_client with the dynamic zap_base_url
+    let zap_client = zap_integration::zap_client::ZapClient::new(zap_base_url.to_string());
 
     match zap_client.run_automation_plan(temp_file.path().to_str().unwrap()).await {
         Ok(plan_id) => {
             info!("Automation plan started successfully with plan ID: {}", plan_id);
             wait_for_automation_plan_to_finish(&zap_client, &plan_id).await;
-            // let client = Client::new();
-            // let verified_findings = perform_verification_process(http_proxy, &client, &zap_client, project_folder_path).await;
-            // generate_final_reports(&verified_findings, project_folder_path, &zap_client).await;
         },
         Err(e) => error!("Failed to start automation plan: {}", e),
     }

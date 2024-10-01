@@ -1,11 +1,11 @@
 use std::env;
-use std::fs;
+use std::fs::{self, File};
 use std::path::PathBuf;
 use std::process::{Command, exit, Stdio};
 
 use log::{error, info};
 
-pub fn run_zap(hud_mode: bool, target_url: Option<&str>) {
+pub fn run_zap(hud_mode: bool, target_url: Option<&str>, zap_port: &str) {
     let zap_dir = PathBuf::from(env::current_dir().unwrap()).join("src/ZAP");
 
     if !zap_dir.exists() {
@@ -37,13 +37,23 @@ pub fn run_zap(hud_mode: bool, target_url: Option<&str>) {
             .expect("Failed to set permissions for ZAP executable");
     }
 
-    info!("ZAP API is starting ...");
+    info!("ZAP API is starting on port {}...", zap_port);
+
+    let zap_log_path = zap_dir.join("zap_output.log");
+
+    if zap_log_path.exists() {
+        fs::remove_file(&zap_log_path).expect("Failed to delete existing log file");
+    }
+
+    let log_file = File::create(&zap_log_path).expect("Failed to create log file for ZAP");
 
     let mut command = Command::new(zap_executable_path);
     command
         .arg("-daemon")
         .arg("-config")
-        .arg("api.disablekey=true");
+        .arg("api.disablekey=true")
+        .arg("-port")
+        .arg(zap_port);
 
     if hud_mode {
         if let Some(url) = target_url {
@@ -52,8 +62,8 @@ pub fn run_zap(hud_mode: bool, target_url: Option<&str>) {
     }
 
     let status = command
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
+        .stdout(Stdio::from(log_file.try_clone().expect("Failed to clone log file for stdout")))
+        .stderr(Stdio::from(log_file))
         .current_dir(&zap_dir)
         .status()
         .expect("Failed to execute ZAP");
@@ -61,5 +71,7 @@ pub fn run_zap(hud_mode: bool, target_url: Option<&str>) {
     if !status.success() {
         error!("Failed to run ZAP, process exited with status: {}", status);
         exit(1);
+    } else {
+        info!("ZAP is running and logging output to {:?}", zap_log_path);
     }
 }
