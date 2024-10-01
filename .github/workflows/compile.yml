@@ -24,7 +24,7 @@ jobs:
           cp -r src/ZAP/* artifact/src/ZAP/
           cp -r src/config/* artifact/src/config/
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3  # Updated to v3
         with:
           name: zeus_linux_x64
           path: artifact/**
@@ -51,7 +51,7 @@ jobs:
           cp -r src/ZAP/* artifact/src/ZAP/
           cp -r src/config/* artifact/src/config/
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3  # Updated to v3
         with:
           name: zeus_windows_x64
           path: artifact/**
@@ -77,7 +77,7 @@ jobs:
           cp -r src/ZAP/* artifact/src/ZAP/
           cp -r src/config/* artifact/src/config/
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3  # Updated to v3
         with:
           name: zeus_macos_x64
           path: artifact/**
